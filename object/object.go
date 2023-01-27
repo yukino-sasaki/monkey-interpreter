@@ -16,6 +16,7 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ = "ERROR"
 	FUNCTION_OBJ = "FUNCTION"
+	STRING_OBJ = "STRING"
 )
 
 // 全ての値がOBject Interfaceを満たす構造体にラップされるようにする
@@ -46,6 +47,10 @@ type Function struct {
 	Parameters []*ast.Identifier
 	Body *ast.BlockStatement
 	Env *Environment
+}
+
+type String struct {
+	Value string
 }
 
 // 整数リテラルに出会うたびにast.IntegerLiteralに変換、ASTを評価数r際にobject.Integerへ変換
@@ -107,4 +112,12 @@ func (e *Error) Inspect() string {
 	return out.String()
  }
 
+
+ func (s * String) Type() ObjectType {
+	return STRING_OBJ
+ }
+
+ func (s *String) Inspect() string {
+	return s.Value
+ }
 
