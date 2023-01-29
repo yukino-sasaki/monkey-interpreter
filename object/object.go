@@ -61,7 +61,7 @@ type Builtin struct {
 	Fn BuiltinFunction
 }
 
-type ARRAY struct {
+type Array struct {
 	Elements []Object
 }
 
@@ -142,8 +142,8 @@ func (e *Error) Inspect() string {
 
 
 
- func (ao *ARRAY) Type() ObjectType { return ARRAY_OBJ }
- func (ao *ARRAY) Inspect() string {
+ func (ao *Array) Type() ObjectType { return ARRAY_OBJ }
+ func (ao *Array) Inspect() string {
 	var out bytes.Buffer
 
 	elements := []string{}

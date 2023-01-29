@@ -117,6 +117,9 @@ func (p *Parser) peekError(t token.TokenType) {
 
 
 func (p *Parser) ParseProgram() *ast.Program {
+	// type Program struct {
+	// 	Statements []Statement
+	//  }
 	program := &ast.Program{}
 program.Statements = []ast.Statement{}
 
