@@ -17,6 +17,8 @@ const (
 	ERROR_OBJ = "ERROR"
 	FUNCTION_OBJ = "FUNCTION"
 	STRING_OBJ = "STRING"
+	BUILTIN_OBJ = "BUILTIN"
+	ARRAY_OBJ = "ARRAY"
 )
 
 // 全ての値がOBject Interfaceを満たす構造体にラップされるようにする
@@ -51,6 +53,16 @@ type Function struct {
 
 type String struct {
 	Value string
+}
+
+type BuiltinFunction func(args ...Object) Object
+
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
+type ARRAY struct {
+	Elements []Object
 }
 
 // 整数リテラルに出会うたびにast.IntegerLiteralに変換、ASTを評価数r際にobject.Integerへ変換
@@ -121,3 +133,28 @@ func (e *Error) Inspect() string {
 	return s.Value
  }
 
+ func (b *Builtin) Type() ObjectType {
+	return BUILTIN_OBJ
+ }
+ func (b *Builtin) Inspect() string {
+	return "builtin function"
+ }
+
+
+
+ func (ao *ARRAY) Type() ObjectType { return ARRAY_OBJ }
+ func (ao *ARRAY) Inspect() string {
+	var out bytes.Buffer
+
+	elements := []string{}
+
+	for _, e := range ao.Elements {
+		elements = append(elements, e.Inspect())
+	}
+
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ","))
+	out.WriteString("]")
+
+	return out.String()
+ }
