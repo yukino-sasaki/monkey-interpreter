@@ -21,6 +21,7 @@ const (
 	BUILTIN_OBJ = "BUILTIN"
 	ARRAY_OBJ = "ARRAY"
 	HASH_OBJ = "HASH"
+	QUOTE_OBJ = "QUOTE"
 )
 
 // 全ての値がOBject Interfaceを満たす構造体にラップされるようにする
@@ -80,6 +81,11 @@ type HashPair struct {
 
 type Hash struct {
 	Pairs map[HashKey]HashPair
+}
+
+// quoteはAST NODEを返したいたいめ
+type Quote struct {
+	Node ast.Node
 }
 
 type Hashable interface {
@@ -217,4 +223,9 @@ func (e *Error) Inspect() string {
 	out.WriteString("}")
 
 	return out.String()
+}
+
+func (q *Quote) Type() ObjectType { return QUOTE_OBJ }
+func (q *Quote) Inspect() string {
+	return "QUOTE(" + q.Node.String() + ")"
 }
