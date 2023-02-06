@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-type ModifierFunc func(Node) Node
 
 func TestModify(t *testing.T) {
 	one := func() Expression { return &IntegerLiteral{Value: 1}}
@@ -45,6 +44,82 @@ func TestModify(t *testing.T) {
 				},
 			},
 		},
+		{
+			&InfixExpression{Left: one(), Operator: "+", Right: two()},
+			&InfixExpression{Left: two(), Operator: "+", Right: two()},
+		},
+		{
+			&InfixExpression{Left: two(), Operator: "+", Right: one()},
+			&InfixExpression{Left: two(), Operator: "+", Right: two()},
+		},
+		{
+			&PrefixExpression{Operator: "+", Right: one()},
+			&PrefixExpression{Operator: "+", Right: two()},
+		},
+		{
+			&IndexExpression{Left: one(), Index: one()},
+			&IndexExpression{Left: two(), Index: two()},
+		},
+		{
+			&IfExpression{
+				Condition: one(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+			},
+			&IfExpression{
+				Condition: two(),
+				Consequence: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+				Alternative: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+			},
+
+		},
+		{
+			&ReturnStatement{ReturnValue: one()},
+			&ReturnStatement{ReturnValue: two()},
+		},
+		{
+			&LetStatement{Value: one()},
+			&LetStatement{Value: two()},
+		},
+		{
+			&FunctionLiteral{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: one()},
+					},
+				},
+			},
+			&FunctionLiteral{
+				Parameters: []*Identifier{},
+				Body: &BlockStatement{
+					Statements: []Statement{
+						&ExpressionStatement{Expression: two()},
+					},
+				},
+			},
+		},
+		{
+			&ArrayLiteral{Elements: []Expression{one(), one()}},
+			&ArrayLiteral{Elements: []Expression{two(), two()}},
+		},
+		
 	}
 
 	for _, tt := range tests {
@@ -55,16 +130,25 @@ func TestModify(t *testing.T) {
 			t.Errorf("not equal. got%#v, want%#v", modified, tt.expected)
 		}
 	}
+
+	hashLiteral := &HashLiteral{
+		Pairs: map[Expression]Expression{
+			one(): one(),
+			one(): one(),
+		},
+	}
+
+	Modify(hashLiteral, turnOneIntoTwo)
+
+	for key, val := range hashLiteral.Pairs {
+		key, _ := key.(*IntegerLiteral)
+		if key.Value != 2 {
+			t.Errorf("value is not %d, fot %d",2, key.Value)
+		}
+		val, _ := val.(*IntegerLiteral)
+		if val.Value != 2 {
+			t.Errorf("value is not %d, got%d", 2, val.Value)
+		}
+	}
 }
 
-func Modify(node Node, modifier ModifierFunc) Node{
-	switch node := node.(type) {
-	case *Program:
-		for i, statement := range node.Statements {
-			node.Statements[i], _ = Modify(statement, modifier).(Statement)
-		}
-	case *ExpressionStatement:
-		node.Expression = Modify(node.Expression, modifier).(Expression)
-	}
-	return modifier(node)
-}
