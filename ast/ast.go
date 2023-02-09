@@ -351,7 +351,7 @@ func (hl * HashLiteral) String() string {
 type MacroLiteral struct {
 	Token token.Token
 	Parameters []*Identifier
-	Body BlockStatement
+	Body *BlockStatement
 }
 
 func (ml * MacroLiteral) expressionNode() {}

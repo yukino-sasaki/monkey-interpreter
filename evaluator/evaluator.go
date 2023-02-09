@@ -20,6 +20,7 @@ func isError(obj object.Object) bool {
 }
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
+	// fmt.Fprintln(node.TokenLiteral())
 	switch node := node.(type) {
 
 	case *ast.Program:

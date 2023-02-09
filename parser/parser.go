@@ -496,7 +496,7 @@ func (p *Parser) parseMacroLiteral() ast.Expression {
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
-	lit.Body = *p.parseBlockStatement()
+	lit.Body = p.parseBlockStatement()
 
 	return lit
 }
